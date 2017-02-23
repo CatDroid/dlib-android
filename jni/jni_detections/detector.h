@@ -187,16 +187,48 @@ class DLibHOGFaceDetector : public DLibHOGDetector {
     // TODO : Convert to gray image to speed up detection
     // It's unnecessary to use color image for face/landmark detection
     dlib::cv_image<dlib::bgr_pixel> img(image);
-    mRets = mFaceDetector(img);
-    LOG(INFO) << "Dlib HOG face det size : " << mRets.size();
+	
+	// 	确保检测图片是检测器的两倍 这第一点是十分有用的 因为脸部检测器搜寻的人脸大小是80*80或者更大 
+	//	因此 如果你想找到比80*80小的人脸 需要将检测图片进行上采样 我们可以调用pyramid_up()函数 
+	//	执行一次pyramid_up()我们能检测40*40大小的了 
+	//	如果我们想检测更小的人脸 那还需要再次执行pyramid_up()函数 
+	//	注意 上采样后 速度会减慢
+	//	
+	//	pyramid_up(img);//对图像进行上采用，检测更小的人脸 @image_transforms/interpolation.h
+	//
+	
+	//	检测人脸，获得边界框 
+    mRets = mFaceDetector(img);  
+	
+	//	检测到人脸的数量
+    LOG(INFO) << "Dlib HOG face det size : " << mRets.size();;
+		
     mFaceShapeMap.clear();
+	
     // Process shape
+	//	调用 shape_predictor 类函数 返回每张人脸的姿势  
+	//	注意形状变量的类型 full_object_detection 
+	//	std::unordered_map<int, dlib::full_object_detection> mFaceShapeMap;
     if (mRets.size() != 0 && mLandMarkModel.empty() == false) {
+		
+		// 遍历每个人脸框 
       for (unsigned long j = 0; j < mRets.size(); ++j) {
-        dlib::full_object_detection shape = msp(img, mRets[j]);
+		  
+		// shape_predictor()
+		// dlib/image_processing/shape_predictor.h
+		// 预测姿势 注意输入是两个 一个是图片 另一个是从该图片检测到的边界框
+        dlib::full_object_detection shape = msp(img, mRets[j]); 
+
         LOG(INFO) << "face index:" << j
                   << "number of parts: " << shape.num_parts();
-        mFaceShapeMap[j] = shape;
+        mFaceShapeMap[j] = shape; 
+		//	shape.part(i-1)  由姿势/形状 68个点组成
+		//	
+			
+		
+		//	我们也能提取每张剪裁后的人脸的副本 旋转和缩放到一个标准尺寸  
+		//	dlib::array<array2d<rgb_pixel> > face_chips;  
+		//  extract_image_chips(img, get_face_chip_details(shapes), face_chips); 
       }
     }
     return mRets.size();
