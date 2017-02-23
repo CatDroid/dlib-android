@@ -88,6 +88,10 @@ def downloadPrebuiltOpencv(prefix='.', out_prefix='.', version='3.1.0'):
     OPENCV_OUT_PATH = os.path.join(out_prefix, OPENCV_OUT_PATH)
     OPENCV_UNZIP_SDK_DIR = os.path.join(OPENCV_UNZIP_DIR, 'sdk', 'native')
 
+    print  'OPENCV_PREBUILT_URL  %s' %OPENCV_PREBUILT_URL
+    print  'OPENCV_ARCHIVE %s' %OPENCV_ARCHIVE
+    print  'OPENCV_OUT_PATH %s' %OPENCV_OUT_PATH
+	
     if not os.path.isdir(OPENCV_UNZIP_DIR):
         currDir = os.getcwd()
         os.chdir(prefix)
