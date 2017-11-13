@@ -97,6 +97,7 @@ class DLibHOGDetector {
 
   virtual inline int det(const std::string& path) {
     using namespace jniutils;
+    LOG(INFO) << "DLibHOGDetector detect !"  ;
     if (!fileExists(mModelPath) || !fileExists(path)) {
       LOG(WARNING) << "No modle path or input file path";
       return 0;
@@ -179,7 +180,7 @@ class DLibHOGFaceDetector : public DLibHOGDetector {
   virtual inline int det(const cv::Mat& image) {
     if (image.empty())
       return 0;
-    LOG(INFO) << "com_tzutalin_dlib_PeopleDet go to det(mat)";
+    LOG(INFO) << "DLibHOGFaceDetector go to det(mat) channel = " << image.channels() ;
     if (image.channels() == 1) {
       cv::cvtColor(image, image, CV_GRAY2BGR);
     }
@@ -214,7 +215,7 @@ class DLibHOGFaceDetector : public DLibHOGDetector {
 		// 遍历每个人脸框 
       for (unsigned long j = 0; j < mRets.size(); ++j) {
 		  
-		// shape_predictor()
+		// shape_predictor()    msp就是dlib::shape_predictor实例
 		// dlib/image_processing/shape_predictor.h
 		// 预测姿势 注意输入是两个 一个是图片 另一个是从该图片检测到的边界框
         dlib::full_object_detection shape = msp(img, mRets[j]); 

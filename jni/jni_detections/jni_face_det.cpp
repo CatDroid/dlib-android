@@ -116,22 +116,25 @@ jobjectArray getDetectResult(JNIEnv* env, DetectorPtr faceDetector,
   return jDetRetArray;
 }
 
+// 如果是选择图片  走 jniDetect
 JNIEXPORT jobjectArray JNICALL
     DLIB_FACE_JNI_METHOD(jniDetect)(JNIEnv* env, jobject thiz,
                                     jstring imgPath) {
-  LOG(INFO) << "jniFaceDet";
+  LOG(INFO) << "-call- 2017.11.13 jniFaceDet";
   const char* img_path = env->GetStringUTFChars(imgPath, 0);
   DetectorPtr detPtr = getDetectorPtr(env, thiz);
   int size = detPtr->det(std::string(img_path));
   env->ReleaseStringUTFChars(imgPath, img_path);
-  LOG(INFO) << "det face size: " << size;
+  LOG(INFO) << "-call- 2017.11.13 jniDetect det face size: " << size;
   return getDetectResult(env, detPtr, size);
 }
 
+
+// 如果是摄像头 走 jniBitmapDetect
 JNIEXPORT jobjectArray JNICALL
     DLIB_FACE_JNI_METHOD(jniBitmapDetect)(JNIEnv* env, jobject thiz,
                                           jobject bitmap) {
-  LOG(INFO) << "jniBitmapFaceDet";
+  LOG(INFO) << "-call- 2017.11.13 jniBitmapFaceDet";
   cv::Mat rgbaMat;
   cv::Mat bgrMat;
   jniutils::ConvertBitmapToRGBAMat(env, bitmap, rgbaMat, true);
@@ -143,7 +146,7 @@ JNIEXPORT jobjectArray JNICALL
   cv::cvtColor(bgrMat, rgbMat, cv::COLOR_BGR2RGB);
   cv::imwrite("/sdcard/ret.jpg", rgbaMat);
 #endif
-  LOG(INFO) << "det face size: " << size;
+  LOG(INFO) << "-call- 2017.11.13 det face size: " << size;
   return getDetectResult(env, detPtr, size);
 }
 
